@@ -1,0 +1,195 @@
+/* ---- Identità visiva Golgi Day: tutto ciò che riguarda l'aspetto è qui ----
+   Colori campionati dal manifesto (Golgi_Day.pdf):
+   teal #6BC2C3 (fondo), magenta #E82D7B ("DAY"), bruno #29110F (ritratto), bianco. */
+:root {
+  --teal: #6bc2c3;
+  --magenta: #e82d7b;
+  --brown: #29110f;
+  --white: #ffffff;
+
+  --band: var(--teal);          /* testata e fascia crediti */
+  --band-ink: var(--brown);     /* testo su teal: il bianco su teal non è leggibile a corpo normale */
+  --wall: var(--brown);         /* parete delle immagini */
+  --wall-2: #3a1d1a;            /* card in attesa */
+  --ink: #f6efe9;               /* testo sulla parete */
+  --ink-2: #c9b9b2;
+  --ink-3: #9a8580;
+  --line: rgba(246, 239, 233, 0.18);
+  --signal: var(--magenta);     /* unico accento: ciò che sta nascendo */
+  --danger: #ff8a7a;
+
+  --font: var(--font-roboto), Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  --gutter: clamp(16px, 2vw, 32px);
+  --col-min: 440px;
+  --footer-h: 112px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+html { scroll-padding-top: 110px; }
+body {
+  background: var(--wall);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100%;
+  padding-bottom: calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
+}
+img { max-width: 100%; display: block; }
+button, input, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--magenta); outline-offset: 2px; }
+
+/* ---- testata teal con barra del prompt ---- */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--band);
+  color: var(--band-ink);
+  padding: 14px var(--gutter) 10px;
+  padding-top: calc(14px + env(safe-area-inset-top, 0px));
+}
+.bar-inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--gutter);
+  align-items: center;
+}
+.brand { display: flex; align-items: center; }
+.brand .unipv { height: 40px; width: auto; }
+.prompt {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid var(--band-ink);
+  padding: 4px 0 6px;
+  font-family: var(--font);
+  font-weight: 300;
+  font-size: clamp(20px, 1.9vw, 32px);
+  line-height: 1.2;
+  color: var(--band-ink);
+  resize: none;
+  overflow: hidden;
+  min-height: 1.2em;
+}
+.prompt::placeholder { color: rgba(41, 17, 15, 0.55); font-style: italic; }
+.prompt:focus { outline: none; border-bottom-color: var(--magenta); }
+.controls { display: flex; align-items: center; gap: 12px; }
+.ratios { display: flex; gap: 6px; }
+.ratio {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  background: transparent;
+  border: 0; border-radius: 4px;
+  cursor: pointer;
+  color: rgba(41, 17, 15, 0.55);
+}
+.ratio[aria-pressed="true"] { color: var(--band-ink); }
+.ratio i { display: block; border: 2px solid currentColor; border-radius: 2px; }
+.ratio[aria-pressed="true"] i { background: currentColor; }
+.go {
+  background: var(--magenta);
+  color: var(--white);
+  border: 0;
+  border-radius: 0;
+  padding: 14px 24px;
+  font-weight: 900;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.go:disabled { background: transparent; color: rgba(41, 17, 15, 0.45); box-shadow: inset 0 0 0 2px rgba(41, 17, 15, 0.3); cursor: default; }
+.note { margin: 4px 0 0; font-size: 13px; color: var(--band-ink); font-weight: 500; min-height: 1.4em; }
+.note.err { color: #8a0f2e; }
+
+/* ---- parete ---- */
+.wall {
+  padding: var(--gutter);
+  column-width: var(--col-min);
+  column-gap: var(--gutter);
+}
+.card { break-inside: avoid; margin: 0 0 calc(var(--gutter) * 1.4); }
+.frame { width: 100%; background: var(--wall-2); overflow: hidden; }
+.frame img { width: 100%; height: 100%; object-fit: cover; }
+.caption {
+  font-weight: 300;
+  font-size: 20px;
+  line-height: 1.3;
+  margin: 10px 0 4px;
+  overflow-wrap: anywhere;
+}
+.meta { color: var(--ink-3); font-size: 12px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.pending .frame {
+  display: flex; align-items: flex-end;
+  padding: 16px;
+  outline: 1px solid var(--line);
+  outline-offset: -1px;
+}
+.pending .frame .caption { margin: 0; color: var(--ink-2); font-style: italic; }
+.pending .meta { color: var(--magenta); font-weight: 900; }
+.pending .meta::before {
+  content: "";
+  display: inline-block;
+  width: 9px; height: 9px;
+  background: var(--magenta);
+  margin-right: 8px;
+  animation: breathe 1.6s ease-in-out infinite;
+}
+@keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+.reveal img { animation: reveal 900ms ease-out both; }
+@keyframes reveal { from { opacity: 0; } to { opacity: 1; } }
+
+.empty {
+  padding: 18vh var(--gutter);
+  font-weight: 300;
+  font-size: clamp(22px, 2.4vw, 34px);
+  color: var(--ink-2);
+  font-style: italic;
+}
+
+/* ---- fascia crediti fissa ---- */
+.credits {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 10;
+  height: calc(var(--footer-h) + env(safe-area-inset-bottom, 0px));
+  padding: 12px var(--gutter) calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--band);
+  color: var(--band-ink);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gutter);
+}
+.credits .date { font-weight: 900; font-size: 30px; white-space: nowrap; color: var(--white); }
+.credits img { height: 100%; width: auto; max-width: 70vw; object-fit: contain; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pending .meta::before, .reveal img { animation: none; }
+}
+@media (max-width: 900px) {
+  .bar-inner { grid-template-columns: 1fr; }
+  .controls { justify-content: space-between; }
+  .credits .date { display: none; }
+}
+
+/* ---- admin ---- */
+.admin { padding: var(--gutter); max-width: 1100px; }
+.admin h1 { font-weight: 900; font-size: 28px; margin: 0 0 16px; }
+.admin .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 24px; }
+.btn {
+  background: transparent; border: 1px solid var(--ink-2); color: var(--ink);
+  padding: 8px 16px; cursor: pointer; font-weight: 500;
+}
+.btn.danger { border-color: var(--danger); color: var(--danger); }
+.btn.solid { background: var(--magenta); color: var(--white); border-color: var(--magenta); }
+.admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+.admin-grid .frame { aspect-ratio: 1; }
+.admin-grid .caption { font-size: 14px; }
+
